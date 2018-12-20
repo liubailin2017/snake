@@ -168,7 +168,7 @@ int Puttext(SDL_Surface *surface,
     SDL_Surface* msg;
     SDL_Rect tpos = {x,y};
 
-    TTF_Font* font = TTF_OpenFont("SDL_font.ttf", ptsize);
+    TTF_Font* font = TTF_OpenFont("/usr/share/fonts/SDL_font.ttf", ptsize);
     if(font == NULL) printf("ttf Error!");
     msg = TTF_RenderUTF8_Solid(font, text, fcolor);
     SDL_BlitSurface(msg, NULL, surface, &tpos);
