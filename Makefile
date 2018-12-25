@@ -1,10 +1,9 @@
 INSTALL_PATH = ~/bin
 INSTALL_NAME = snake
-install: build
+install: build setzero
 	mkdir -p $(INSTALL_PATH)
 	cp -r --preserve=timestamps bin/* $(INSTALL_PATH)/
 	sudo cp -r SDL_font.ttf /usr/share/fonts/
-	cp -r hscore.sav $(INSTALL_PATH)/
 	rm -rf bin 
 	echo Installed in $(INSTALL_PATH)/
 build: dependent
@@ -15,6 +14,7 @@ build: dependent
 	gcc -c ver.c -o obj/ver.o
 	gcc obj/main.o obj/file.o obj/ver.o -o bin/snake  -lSDL2  -lSDL2_ttf -lpthread
 dependent: 
+	awk 'BEGIN { cmd="cp -ri hscore.sav ~/"; print "n" |cmd; }'
 	echo 'install sdl2 and other library that about Sdl2.'
 	sudo apt install libsdl2-dev
 	sudo apt install libsdl2-ttf-dev
@@ -27,3 +27,9 @@ uninstall:
 	rm $(INSTALL_PATH)/snake
 test: build
 	./bin/snake
+
+
+setzero:
+	gcc -c set_zero.c -o obj/set_zero.o
+	gcc obj/set_zero.o obj/file.o -o bin/setzero
+	./bin/setzero

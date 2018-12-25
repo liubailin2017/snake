@@ -1,15 +1,32 @@
 #include<stdio.h>
+#include<stdio.h>
 #include"file.h"
 extern int hscore[11];
+
 int DSave(){
-    char s[] = "此文件保存的是最高分数据,请不要修改！如果程序异常请运行setnull.exe";
-    FILE *save = fopen("hscore.sav","w");
+    char *home;
+    home = getenv("HOME");
+    char path[256] ={'\0'};
+    strcat(path,home);
+    strcat(path,"/hscore.sav");
+
+    char s[] = "this is saving about you high score";
+
+    FILE *save = fopen(path,"w");
     fwrite(hscore,sizeof(int),10,save);
     fwrite(s,sizeof(s),1,save);
-    fclose(save);}
+
+    fclose(save);
+}
 
 int DRead(){
-    FILE* fload = fopen("hscore.sav","r");
+    char *home;
+    home = getenv("HOME");
+    char path[256] ={'\0'};
+    strcat(path,home);
+    strcat(path,"/hscore.sav");
+    FILE* fload = fopen(path,"r");
     if(fload == NULL) exit(1);
     fread(hscore,sizeof(int),10,fload);
-    fclose (fload);}
+    fclose (fload);
+}
