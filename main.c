@@ -472,34 +472,9 @@ void Smove(SDirect dir)
         stmp = stmpn->next;
         stmpn->next = NULL ;
     }
+	stmp->x = NextStep.x;
+	stmp->y = NextStep.y;
 
-    switch(dir)
-    {
-    case LEFT:
-        {
-            stmp->x = snakeh->x - 1;
-            stmp->y = snakeh->y;
-        }
-        break;
-    case UP:
-        {
-            stmp->x = snakeh->x;
-            stmp->y = snakeh->y - 1;
-        }
-        break;
-    case DOWN:
-        {
-            stmp->x = snakeh->x;
-            stmp->y = snakeh->y + 1;
-        }
-        break;
-    case RIGHT:
-        {
-            stmp->x = snakeh->x + 1;
-            stmp->y = snakeh->y ;
-        }
-        break;
-    }
         stmp->next = snakeh;
         snakeh = stmp ;
         if(iEatFood)
