@@ -17,7 +17,7 @@ $ make build
 $ make install
 ## 运行
 $ snake
-![](prtsc.png)
+![](readme_img/prtsc.png)
 
 
 
