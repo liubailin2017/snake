@@ -1,4 +1,4 @@
 .o
 .out
 obj/
-./bin
+bin/
