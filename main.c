@@ -7,8 +7,8 @@
 #include"file.h"
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_ttf.h>
-#define Width 640
-#define Height 480
+#define Width 840
+#define Height 560
 #define DELAY 260
 //游戏在窗口左上角坐标
 #define XX GameMR.x
@@ -46,7 +46,7 @@ typedef enum _SDirect /*蛇头朝向*/
         RIGHT
 }SDirect;
 
-Snake food = {5,0};
+Snake food = {4,0};
 Snake *snakeh;//蛇头结点
 int Sscore = 0;
 int hscore[11] = {0,0,0,0,0,0,0,0,0,0,0};
@@ -143,7 +143,47 @@ int Putpixel(SDL_Surface *surface, int Px, int Py,Uint32 color)
     return 0;
 }
 
+int swapInt(int *t1, int *t2){
+    int t = *t1;
+    *t1 = *t2;
+    *t2 = t;
+}
 
+/**
+w 是个不友好值建议传入1
+**/
+
+void line(SDL_Surface *surface,int x,int y ,int x2,int y2,Uint32 color,int width) {
+
+    if(x > x2){
+        swapInt(&x,&x2);
+    }
+    if(y > y2) {
+        swapInt(&y,&y2);
+    }
+
+    int w = x2-x;
+    int h = y2-y;
+
+    if(w > h) {
+        int i = 0;
+        for(i = 0; i<= x2 - x; i++) {
+            int j =0; //宽度
+            for(int j = 0; j< width; j++){
+                Putpixel(surface, x + i + j, y + i*h/w + j, color);
+            }
+        }
+
+    }else {
+        int i = 0;
+        for(i = 0; i<= y2 - y; i++) {
+            int j =0; //宽度
+            for(int j = 0; j< width; j++){
+                Putpixel(surface, x + i*w/h + j , y + i + j , color);
+            }
+        }
+    }
+}
 
 void Bar(SDL_Surface *surface, SDL_Rect Bar_Rect, Uint32 color)
 {
@@ -398,8 +438,8 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
 
 void Initsnake()        //初始化蛇
 {
-    limitx = 8;
-    limity = 5;
+    limitx = 12;
+    limity = 9;
 
     snakeh = (Snake *)malloc(sizeof(Snake));
     snakeh->x = 2;
@@ -433,6 +473,9 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
         Bar(surface,rect,rand()*0xff & 0xff00ff);
     }
     //画蛇身
+    SDL_Rect tRect;
+    tRect.x = -1;
+    tRect.y = -1;
     while(tmp1 != NULL)
     {
         rect.x = ((tmp1->x) * XX3+1)+GameMR.x;
@@ -440,13 +483,16 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
         rect.w = XX3-1;
         rect.h = YY3-1;
         Bar(surface,rect,nodecolor);
+        if(tRect.x != -1 && tRect.y != -1) {
+            line(surface,tRect.x+tRect.w/2,tRect.y+tRect.h/2,rect.x+rect.w/2,rect.y+rect.h/2,0x005500,10);
+        }
+        tRect = rect;
+
         tmp1 = tmp1->next;
         if(nodecolor < 0x00f000) nodecolor +=0x000f00;
     }
 
-
     if(ispause) puths(surface);
-
     SDL_UpdateWindowSurface(window);
 }
 
