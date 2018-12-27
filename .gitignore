@@ -1,4 +1,9 @@
 .o
 .out
+
+snake.layout
+snake.cbp
+
 obj/
 bin/
+

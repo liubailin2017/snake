@@ -1,4 +1,4 @@
-/*ËµÃ÷Ê¹ÓÃµÄ²Ù×÷ÏµÍ³*/
+/*è¯´æ˜ä½¿ç”¨çš„æ“ä½œç³»ç»Ÿ*/
 
 #define Linux
 #include<stdio.h>
@@ -9,36 +9,36 @@
 #include<SDL2/SDL_ttf.h>
 #define Width 640
 #define Height 480
-
 #define DELAY 260
-//ÓÎÏ·ÔÚ´°¿Ú×óÉÏ½Ç×ø±ê
+//æ¸¸æˆåœ¨çª—å£å·¦ä¸Šè§’åæ ‡
 #define XX GameMR.x
 #define YY GameMR.y
-//ÓÎÏ·ÔÚ´°¿ÚÓÒÏÂ½Ç×ø±ê
+//æ¸¸æˆåœ¨çª—å£å³ä¸‹è§’åæ ‡
 #define XX2 (GameMR.x + GameMR.w)
 #define YY2 (GameMR.y + GameMR.h)
-//Ò»½ÚµÄ´óĞ¡
+//ä¸€èŠ‚çš„å¤§å°
 #define XX3 (GameMR.w)/limitx
 #define YY3 (GameMR.h)/limity
 #define PASS 0x5201314F
-#define SDSize 3
+#define SDSize 30
 #ifdef Windows
 #include<windows.h>
 #endif
 typedef struct snake
 {
     int x ;
-    int y ; /*x ,y ²»ÊÇÏñËØ »¹ÊÇÉßµÄÎ»ÖÃ*/
+    int y ; /*x ,y ä¸æ˜¯åƒç´  è€Œæ˜¯è›‡çš„ä½ç½®*/
     struct snake *next ;
-} Snake ;
+} Snake;
 
-typedef struct _DirMsg /*ÊäÈë¶ÓÁĞ*/
+typedef struct _DirMsg /*è¾“å…¥é˜Ÿåˆ—*/
 {
     SDL_Keycode msg[SDSize];
     int Rear;
     int Front;
 }DirMsg;
-typedef enum _SDirect /*ÉßÍ·³¯Ïò*/
+
+typedef enum _SDirect /*è›‡å¤´æœå‘*/
 {
         UP = 1,
         DOWN,
@@ -47,21 +47,25 @@ typedef enum _SDirect /*ÉßÍ·³¯Ïò*/
 }SDirect;
 
 Snake food = {5,0};
-Snake *snakeh;//ÉßÍ·½áµã
+Snake *snakeh;//è›‡å¤´ç»“ç‚¹
 int Sscore = 0;
 int hscore[11] = {0,0,0,0,0,0,0,0,0,0,0};
-int isquit = 0 ; // ÊÇ·ñÍË³ö
-int isgameover = 0;//ÊÇ·ñÓÎÏ·½áÊø
+int isquit = 0 ; // æ˜¯å¦é€€å‡º
+int isgameover = 0;//æ˜¯å¦æ¸¸æˆç»“æŸ
 const SDL_Rect GameMR = {20, 40, Width - 40, Height - 60};
 
 int limitx = 0;
 int limity = 0;
 
+
+static DirMsg DirTmp = {{0},0,0}; //è‡ªå·±ç»´æŠ¤çš„ä¸€ä¸ªæ¶ˆæ¯é˜Ÿåˆ—
+static DirMsg *pDirTmp = &DirTmp;
+
 int Puttext(SDL_Surface *surface, int , int ,int ,SDL_Color ,char *);
-int Putpixel(SDL_Surface* , int, int, Uint32);                             //»­µã
-void Bar(SDL_Surface* , SDL_Rect, Uint32);                                 //»­¿òº¯Êı
-void GameframeR(SDL_Surface* , int); //»­ÓÎÏ·¿ò¼Ü
-void Afood(); //Ìí¼ÓÊ³Îï
+int Putpixel(SDL_Surface* , int, int, Uint32);                             //ç”»ç‚¹
+void Bar(SDL_Surface* , SDL_Rect, Uint32);                                 //ç”»æ¡†å‡½æ•°
+void GameframeR(SDL_Surface* , int); //ç”»æ¸¸æˆæ¡†æ¶
+void Afood(); //æ·»åŠ é£Ÿç‰©
 void Initsnake();
 void Gamerun(SDL_Surface* surface,SDL_Window * window);
 void draw(SDL_Surface* ,SDL_Window* ,int);
@@ -82,14 +86,13 @@ int main(int argc, char *argv[])
     SDL_Init(SDL_INIT_EVERYTHING);
     TTF_Init();
     DRead();
-
     SDL_Window* window = SDL_CreateWindow(" My qq:2570667204"
                                           ,SDL_WINDOWPOS_UNDEFINED
                                           ,SDL_WINDOWPOS_UNDEFINED
                                           ,Width,Height
                                           ,SDL_WINDOW_SHOWN);
     SDL_Surface* screen = SDL_GetWindowSurface(window);
-//ÖØ¸´ÓÎÏ· ¡£
+//é‡å¤æ¸¸æˆ ã€‚
      while(!isquit)
     {
         isgameover = 0;
@@ -104,10 +107,10 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-/************»æµã*****************
- *¸øÒ»¸ösuface»æÒ»¸öµã
- *Px ,Py ×ø±ê
- *colorÑÕÉ«
+/************ç»˜ç‚¹*****************
+ *ç»™ä¸€ä¸ªsufaceç»˜ä¸€ä¸ªç‚¹
+ *Px ,Py åæ ‡
+ *coloré¢œè‰²
  *********************************/
 int Putpixel(SDL_Surface *surface, int Px, int Py,Uint32 color)
 {
@@ -128,7 +131,7 @@ int Putpixel(SDL_Surface *surface, int Px, int Py,Uint32 color)
             {
                 SDL_UnlockSurface(surface);
             }
-            return 1 ;    /*  ********** !·µ»Ø ************/
+            return 1 ;    /*  ********** !è¿”å› ************/
         }
         else
             return 0 ;
@@ -152,12 +155,12 @@ void Bar(SDL_Surface *surface, SDL_Rect Bar_Rect, Uint32 color)
         }
 }
 
-/************ÔÚSurfaceÊä³öÎÄ±¾************
- *  suface Êä³ö
- *  x,y×ø±ê
- *  ´óĞ¡
- *  fcolorÑÕÉ«
- *  ÎÄ±¾
+/************åœ¨Surfaceè¾“å‡ºæ–‡æœ¬************
+ *  suface è¾“å‡º
+ *  x,yåæ ‡
+ *  å¤§å°
+ *  fcoloré¢œè‰²
+ *  æ–‡æœ¬
  *****************************************/
 int Puttext(SDL_Surface *surface,
             int x, int y,
@@ -177,9 +180,9 @@ int Puttext(SDL_Surface *surface,
     return 1;
 }
 
-/**********ÓÎÏ·µÄ´°¿Ú¿ò¼Ü*******
+/**********æ¸¸æˆçš„çª—å£æ¡†æ¶*******
  *surface
- *·ÖÊı /µ±Ç°·ÖÊı£¬µ±Ê±Ã»Éè¼ÆºÃ¡£ËãÊÇÒ»¸öÃ»ÓÃµÄ¶«Î÷
+ *åˆ†æ•° /å½“å‰åˆ†æ•°ï¼Œå½“æ—¶æ²¡è®¾è®¡å¥½ã€‚ç®—æ˜¯ä¸€ä¸ªæ²¡ç”¨çš„ä¸œè¥¿
  ********************************/
 void GameframeR(SDL_Surface* surface,int score)
 {
@@ -228,13 +231,13 @@ void GameframeR(SDL_Surface* surface,int score)
     }
 }
 
-/***********¸üĞÂÊ³Îï**********
+/***********æ›´æ–°é£Ÿç‰©**********
 *
 ***********************************/
 void Afood()
 {
     Snake* tmp = snakeh;
-    int isfoodself = 0; // Ê³ÎïÊÇ·ñÔÚ×Ô¼ºÉíÉÏ
+    int isfoodself = 0; // é£Ÿç‰©æ˜¯å¦åœ¨è‡ªå·±èº«ä¸Š
     do
     {
         isfoodself = 0;
@@ -253,7 +256,7 @@ void Afood()
     }
     while(isfoodself == 1);
 }
-/**********ÏÂÃæÈı¸öº¯ÊıÊµÏÖÖ»ÄÜ´æ2¸öÊäÈëµÄ¶ÓÁĞ**************/
+/**********ä¸‹é¢ä¸‰ä¸ªå‡½æ•°å®ç°åªèƒ½å­˜2ä¸ªè¾“å…¥çš„é˜Ÿåˆ—**************/
 int IsDrEmpty(DirMsg *sdir)
 {
     if(sdir->Front == sdir->Rear)
@@ -272,6 +275,23 @@ SDL_Keycode PollDirect(DirMsg *sdir)
     }
 return tmp;
 }
+
+/**
+    åªçœ‹é˜Ÿå¤´
+
+sdir å¾…å¤„ç†çš„æ¶ˆæ¯é˜Ÿåˆ—
+
+è¿”å›ï¼š
+    é˜Ÿå¤´æ¶ˆæ¯ï¼Œ å¦‚æœé˜Ÿåˆ—ä¸ºç©ºåˆ™è¿”å›0
+*/
+SDL_Keycode peekDirect(DirMsg *sdir) {
+    SDL_Keycode result = 0;
+    if(!IsDrEmpty(sdir)) {
+        result = sdir ->msg[sdir->Front];
+    }
+    return result;
+}
+
 int PushNextDirect(DirMsg *sdir ,SDL_Keycode message)
 {
     if(sdir->Front != (sdir->Rear + 1)% SDSize)
@@ -284,16 +304,18 @@ int PushNextDirect(DirMsg *sdir ,SDL_Keycode message)
     else
         return 0;
 }
-/********ÓÎÏ·ÔËĞĞÊ±*************
+/********æ¸¸æˆè¿è¡Œæ—¶*************
  *surface , window
- *ÓÎÏ·ÔËĞĞÊ±£¬°üº¬ÊÂ¼ş´¦Àí
+ *æ¸¸æˆè¿è¡Œæ—¶ï¼ŒåŒ…å«äº‹ä»¶å¤„ç†
  *******************************/
+
+
 void Gamerun(SDL_Surface* surface,SDL_Window * window)
 {
     int pause = 1;
     SDL_Event event;
     SDirect sdir = RIGHT;
-    DirMsg DirTmp = {{0,0,0},0,0}; //³õÊ¼»¯
+    SDL_Keycode code;
     while ((!isquit) && (!isgameover))
     {
        while(SDL_PollEvent(&event))
@@ -308,10 +330,12 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
                 break;
 
             case SDL_QUIT:
-                isquit = 1; //ÍË³ö
+                isquit = 1; //é€€å‡º
                 break;
             case SDL_KEYDOWN:
-                PushNextDirect(&DirTmp,event.key.keysym.sym);
+                 code=event.key.keysym.sym;
+                if(code != peekDirect(pDirTmp))
+                    PushNextDirect(&DirTmp,event.key.keysym.sym);
                 pause = 0;
             }
         }
@@ -358,9 +382,9 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
             limitx = limitx + 5;
             limity = limity + 5;
             printf("limitx,y= %d,%d /n",limitx,limity);
-        } // ÉíÌåÌîÂúÁËÕû¸ö´°¿Ú£¬ËõĞ¡ÉíÌå
+        } // èº«ä½“å¡«æ»¡äº†æ•´ä¸ªçª—å£ï¼Œç¼©å°èº«ä½“
 
-        if(isfender() || isself()) // ÓÎÏ·½áÊø
+        if(isfender() || isself()) // æ¸¸æˆç»“æŸ
         {
             isgameover = 1;
             Gameover(window);
@@ -372,15 +396,15 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
 
 }
 
-void Initsnake()        //³õÊ¼»¯Éß
+void Initsnake()        //åˆå§‹åŒ–è›‡
 {
-    limitx = 12;
-    limity = 9;
+    limitx = 8;
+    limity = 5;
 
     snakeh = (Snake *)malloc(sizeof(Snake));
     snakeh->x = 2;
     snakeh->y = 0;
-//Ìí¼ÓÁ½½Ú
+//æ·»åŠ ä¸¤èŠ‚
     Snake* tmp = (Snake *)malloc(sizeof(Snake));
     tmp->x = 1;
     tmp->y = 0;
@@ -400,7 +424,7 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
     Snake* tmp1;
     SDL_Rect rect;
     tmp1 = snakeh;
-//»­Ê³Îï
+//ç”»é£Ÿç‰©
     {
         rect.x = ((food.x) * XX3)+GameMR.x;
         rect.y = ((food.y) * YY3)+GameMR.y;
@@ -408,7 +432,7 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
         rect.h = YY3;
         Bar(surface,rect,rand()*0xff & 0xff00ff);
     }
-    //»­ÉßÉí
+    //ç”»è›‡èº«
     while(tmp1 != NULL)
     {
         rect.x = ((tmp1->x) * XX3+1)+GameMR.x;
@@ -425,6 +449,7 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
 
     SDL_UpdateWindowSurface(window);
 }
+
 void Smove(SDirect dir)
 {
     Snake* stmp,*stmpn = snakeh;
@@ -490,7 +515,7 @@ void Gameover(SDL_Window *window)
     Snake* tmp ;
     food.x = 5 ;
     food.y = 0 ;
-//Çå³ıÁ´±í
+//æ¸…é™¤é“¾è¡¨
     while(snakeh != NULL )
     {
         if(snakeh != NULL) tmp = snakeh ;
@@ -498,7 +523,7 @@ void Gameover(SDL_Window *window)
         free(tmp);
     }
 
-    Inserths(Sscore);//²åÈë·ÖÊı
+    Inserths(Sscore);//æ’å…¥åˆ†æ•°
     DSave();
     Sscore = 0 ;
 }
@@ -534,7 +559,7 @@ void puths(SDL_Surface *surface)
     }
 
 }
-void Inserths(int sc) //²åÈë×î¸ß·Ö
+void Inserths(int sc) //æ’å…¥æœ€é«˜åˆ†
 {
     int i ;
     for(i = 9 ; hscore[i] < sc && i>=0 ; i--)
