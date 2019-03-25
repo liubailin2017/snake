@@ -1,4 +1,6 @@
-/*说明使用的操作系统*/
+/*è¯Žæäœ¿çšçæäœç³»ç»*/
+
+#include"title.h"
 
 #define Linux
 #include<stdio.h>
@@ -10,13 +12,13 @@
 #define Width 840
 #define Height 560
 #define DELAY 260
-//游戏在窗口左上角坐标
+//æžžæåšçªå£å·Šäžè§åæ 
 #define XX GameMR.x
 #define YY GameMR.y
-//游戏在窗口右下角坐标
+//æžžæåšçªå£å³äžè§åæ 
 #define XX2 (GameMR.x + GameMR.w)
 #define YY2 (GameMR.y + GameMR.h)
-//一节的大小
+//äžèçå€§å°
 #define XX3 (GameMR.w)/limitx
 #define YY3 (GameMR.h)/limity
 #define PASS 0x5201314F
@@ -27,18 +29,18 @@
 typedef struct snake
 {
     int x ;
-    int y ; /*x ,y 不是像素 而是蛇的位置*/
+    int y ; /*x ,y äžæ¯åçŽ  èæ¯èçäœçœ®*/
     struct snake *next ;
 } Snake;
 
-typedef struct _DirMsg /*输入队列*/
+typedef struct _DirMsg /*èŸå¥éå*/
 {
     SDL_Keycode msg[SDSize];
     int Rear;
     int Front;
 }DirMsg;
 
-typedef enum _SDirect /*蛇头朝向*/
+typedef enum _SDirect /*èå€Žæå*/
 {
         UP = 1,
         DOWN,
@@ -47,25 +49,25 @@ typedef enum _SDirect /*蛇头朝向*/
 }SDirect;
 
 Snake food = {4,0};
-Snake *snakeh;//蛇头结点
+Snake *snakeh;//èå€Žç»ç¹
 int Sscore = 0;
 int hscore[11] = {0,0,0,0,0,0,0,0,0,0,0};
-int isquit = 0 ; // 是否退出
-int isgameover = 0;//是否游戏结束
+int isquit = 0 ; // æ¯åŠéåº
+int isgameover = 0;//æ¯åŠæžžæç»æ
 const SDL_Rect GameMR = {20, 40, Width - 40, Height - 60};
 
 int limitx = 0;
 int limity = 0;
 
 
-static DirMsg DirTmp = {{0},0,0}; //自己维护的一个消息队列
+static DirMsg DirTmp = {{0},0,0}; //èªå·±ç»Žæ€çäžäžªæ¶æ¯éå
 static DirMsg *pDirTmp = &DirTmp;
 
 int Puttext(SDL_Surface *surface, int , int ,int ,SDL_Color ,char *);
-int Putpixel(SDL_Surface* , int, int, Uint32);                             //画点
-void Bar(SDL_Surface* , SDL_Rect, Uint32);                                 //画框函数
-void GameframeR(SDL_Surface* , int); //画游戏框架
-void Afood(); //添加食物
+int Putpixel(SDL_Surface* , int, int, Uint32);                             //ç»ç¹
+void Bar(SDL_Surface* , SDL_Rect, Uint32);                                 //ç»æ¡åœæ°
+void GameframeR(SDL_Surface* , int); //ç»æžžææ¡æ¶
+void Afood(); //æ·»å é£ç©
 void Initsnake();
 void Gamerun(SDL_Surface* surface,SDL_Window * window);
 void draw(SDL_Surface* ,SDL_Window* ,int);
@@ -91,13 +93,19 @@ int main(int argc, char *argv[])
                                           ,SDL_WINDOWPOS_UNDEFINED
                                           ,Width,Height
                                           ,SDL_WINDOW_SHOWN);
+
+
+
     SDL_Surface* screen = SDL_GetWindowSurface(window);
-//重复游戏 。
+//éå€æžžæ ã
      while(!isquit)
     {
         isgameover = 0;
         Initsnake();
+//        init(window);
+//    	startChangeTitle();//开始自动更新标题
         Gamerun(screen,window);
+  //      stopChangeTitle();
     }
 
 
@@ -107,10 +115,10 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-/************绘点*****************
- *给一个suface绘一个点
- *Px ,Py 坐标
- *color颜色
+/************ç»ç¹*****************
+ *ç»äžäžªsufaceç»äžäžªç¹
+ *Px ,Py åæ 
+ *coloré¢è²
  *********************************/
 int Putpixel(SDL_Surface *surface, int Px, int Py,Uint32 color)
 {
@@ -131,7 +139,7 @@ int Putpixel(SDL_Surface *surface, int Px, int Py,Uint32 color)
             {
                 SDL_UnlockSurface(surface);
             }
-            return 1 ;    /*  ********** !返回 ************/
+            return 1 ;    /*  ********** !è¿å ************/
         }
         else
             return 0 ;
@@ -150,39 +158,46 @@ int swapInt(int *t1, int *t2){
 }
 
 /**
-w 是个不友好值建议传入1
+w æ¯äžªäžåå¥œåŒå»ºè®®äŒ å¥1
 **/
+#include "stdlib.h"
+
+#include "math.h"
+
+
+
+int rounding(const float a){return (int) (a + 0.5);}
+
+void dda(SDL_Surface *surface,int x0, int y0, int xEnd, int yEnd,Uint32 color)
+
+{
+    int dx = xEnd - x0, dy = yEnd - y0, steps, k;
+    float xInc, yInc, x = (float)x0, y = (float)y0;
+    if(fabs(dx)>fabs(dy))
+    {
+         steps = fabs(dx);
+    }
+    else
+    {
+         steps = fabs(dy);
+    }
+
+    xInc = (float)(dx)/(float)(steps);
+    yInc = (float)(dy)/(float)(steps);
+    Putpixel(surface,rounding(x),rounding(y),color);
+    for(k=0;k<steps;k++)
+    {
+         x += xInc;
+         y += yInc;
+         Putpixel(surface,rounding(x),rounding(y),color);
+    }
+}
+/*
+param width is invalid
+*/
 
 void line(SDL_Surface *surface,int x,int y ,int x2,int y2,Uint32 color,int width) {
-
-    if(x > x2){
-        swapInt(&x,&x2);
-    }
-    if(y > y2) {
-        swapInt(&y,&y2);
-    }
-
-    int w = x2-x;
-    int h = y2-y;
-
-    if(w > h) {
-        int i = 0;
-        for(i = 0; i<= x2 - x; i++) {
-            int j =0; //宽度
-            for(int j = 0; j< width; j++){
-                Putpixel(surface, x + i + j, y + i*h/w + j, color);
-            }
-        }
-
-    }else {
-        int i = 0;
-        for(i = 0; i<= y2 - y; i++) {
-            int j =0; //宽度
-            for(int j = 0; j< width; j++){
-                Putpixel(surface, x + i*w/h + j , y + i + j , color);
-            }
-        }
-    }
+    dda(surface,x,y,x2,y2,color);
 }
 
 void Bar(SDL_Surface *surface, SDL_Rect Bar_Rect, Uint32 color)
@@ -195,12 +210,12 @@ void Bar(SDL_Surface *surface, SDL_Rect Bar_Rect, Uint32 color)
         }
 }
 
-/************在Surface输出文本************
- *  suface 输出
- *  x,y坐标
- *  大小
- *  fcolor颜色
- *  文本
+/************åšSurfaceèŸåºææ¬************
+ *  suface èŸåº
+ *  x,yåæ 
+ *  å€§å°
+ *  fcoloré¢è²
+ *  ææ¬
  *****************************************/
 int Puttext(SDL_Surface *surface,
             int x, int y,
@@ -220,9 +235,9 @@ int Puttext(SDL_Surface *surface,
     return 1;
 }
 
-/**********游戏的窗口框架*******
+/**********æžžæççªå£æ¡æ¶*******
  *surface
- *分数 /当前分数，当时没设计好。算是一个没用的东西
+ *åæ° /åœååæ°ïŒåœæ¶æ²¡è®Ÿè®¡å¥œãç®æ¯äžäžªæ²¡çšçäžè¥¿
  ********************************/
 void GameframeR(SDL_Surface* surface,int score)
 {
@@ -271,13 +286,13 @@ void GameframeR(SDL_Surface* surface,int score)
     }
 }
 
-/***********更新食物**********
+/***********æŽæ°é£ç©**********
 *
 ***********************************/
 void Afood()
 {
     Snake* tmp = snakeh;
-    int isfoodself = 0; // 食物是否在自己身上
+    int isfoodself = 0; // é£ç©æ¯åŠåšèªå·±èº«äž
     do
     {
         isfoodself = 0;
@@ -289,6 +304,7 @@ void Afood()
             if(tmp->x == food.x && tmp->y == food.y )
             {
                 isfoodself = 1;
+
             }
             tmp = tmp->next;
 
@@ -296,7 +312,7 @@ void Afood()
     }
     while(isfoodself == 1);
 }
-/**********下面三个函数实现只能存2个输入的队列**************/
+/**********äžé¢äžäžªåœæ°å®ç°åªèœå­2äžªèŸå¥çéå**************/
 int IsDrEmpty(DirMsg *sdir)
 {
     if(sdir->Front == sdir->Rear)
@@ -317,12 +333,12 @@ return tmp;
 }
 
 /**
-    只看队头
+    åªçéå€Ž
 
-sdir 待处理的消息队列
+sdir åŸå€ççæ¶æ¯éå
 
-返回：
-    队头消息， 如果队列为空则返回0
+è¿åïŒ
+    éå€Žæ¶æ¯ïŒ åŠæéåäžºç©ºåè¿å0
 */
 SDL_Keycode peekDirect(DirMsg *sdir) {
     SDL_Keycode result = 0;
@@ -344,9 +360,9 @@ int PushNextDirect(DirMsg *sdir ,SDL_Keycode message)
     else
         return 0;
 }
-/********游戏运行时*************
+/********æžžæè¿è¡æ¶*************
  *surface , window
- *游戏运行时，包含事件处理
+ *æžžæè¿è¡æ¶ïŒåå«äºä»¶å€ç
  *******************************/
 
 
@@ -370,7 +386,7 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
                 break;
 
             case SDL_QUIT:
-                isquit = 1; //退出
+                isquit = 1; //éåº
                 break;
             case SDL_KEYDOWN:
                  code=event.key.keysym.sym;
@@ -422,9 +438,9 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
             limitx = limitx + 5;
             limity = limity + 5;
             printf("limitx,y= %d,%d /n",limitx,limity);
-        } // 身体填满了整个窗口，缩小身体
+        } // èº«äœå¡«æ»¡äºæŽäžªçªå£ïŒçŒ©å°èº«äœ
 
-        if(isfender() || isself()) // 游戏结束
+        if(isfender() || isself()) // æžžæç»æ
         {
             isgameover = 1;
             Gameover(window);
@@ -436,7 +452,7 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
 
 }
 
-void Initsnake()        //初始化蛇
+void Initsnake()        //åå§åè
 {
     limitx = 12;
     limity = 9;
@@ -444,7 +460,7 @@ void Initsnake()        //初始化蛇
     snakeh = (Snake *)malloc(sizeof(Snake));
     snakeh->x = 2;
     snakeh->y = 0;
-//添加两节
+//æ·»å äž€è
     Snake* tmp = (Snake *)malloc(sizeof(Snake));
     tmp->x = 1;
     tmp->y = 0;
@@ -464,7 +480,7 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
     Snake* tmp1;
     SDL_Rect rect;
     tmp1 = snakeh;
-//画食物
+//ç»é£ç©
     {
         rect.x = ((food.x) * XX3)+GameMR.x;
         rect.y = ((food.y) * YY3)+GameMR.y;
@@ -472,7 +488,7 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
         rect.h = YY3;
         Bar(surface,rect,rand()*0xff & 0xff00ff);
     }
-    //画蛇身
+    //ç»èèº«
     SDL_Rect tRect;
     tRect.x = -1;
     tRect.y = -1;
@@ -491,7 +507,6 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
         tmp1 = tmp1->next;
         if(nodecolor < 0x00f000) nodecolor +=0x000f00;
     }
-
     if(ispause) puths(surface);
     SDL_UpdateWindowSurface(window);
 }
@@ -561,7 +576,7 @@ void Gameover(SDL_Window *window)
     Snake* tmp ;
     food.x = 5 ;
     food.y = 0 ;
-//清除链表
+//æžé€éŸè¡š
     while(snakeh != NULL )
     {
         if(snakeh != NULL) tmp = snakeh ;
@@ -569,7 +584,7 @@ void Gameover(SDL_Window *window)
         free(tmp);
     }
 
-    Inserths(Sscore);//插入分数
+    Inserths(Sscore);//æå¥åæ°
     DSave();
     Sscore = 0 ;
 }
@@ -605,7 +620,7 @@ void puths(SDL_Surface *surface)
     }
 
 }
-void Inserths(int sc) //插入最高分
+void Inserths(int sc) //æå¥æé«å
 {
     int i ;
     for(i = 9 ; hscore[i] < sc && i>=0 ; i--)

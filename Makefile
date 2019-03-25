@@ -12,7 +12,8 @@ build: dependent
 	gcc -c main.c -o obj/main.o
 	gcc -c file.c -o obj/file.o
 	gcc -c ver.c -o obj/ver.o
-	gcc obj/main.o obj/file.o obj/ver.o -o bin/snake  -lSDL2  -lSDL2_ttf -lpthread
+	gcc -c title.c -o obj/title.o
+	gcc obj/title.o obj/main.o obj/file.o obj/ver.o -o bin/snake  -lSDL2  -lSDL2_ttf -lpthread
 dependent: 
 	awk 'BEGIN { cmd="cp -ri hscore.sav ~/"; print "n" |cmd; }'
 	echo 'install sdl2 and other library that about Sdl2.'
