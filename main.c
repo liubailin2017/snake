@@ -168,19 +168,23 @@ w æ¯äžªäžåå¥œåŒå»ºè®®äŒ å¥1
 
 int rounding(const float a){return (int) (a + 0.5);}
 
-void dda(SDL_Surface *surface,int x0, int y0, int xEnd, int yEnd,Uint32 color)
+void dda(SDL_Surface *surface,int x0, int y0, int xEnd, int yEnd,Uint32 color,int width)
 
 {
     int dx = xEnd - x0, dy = yEnd - y0, steps, k;
     float xInc, yInc, x = (float)x0, y = (float)y0;
+    int wy = 1, wx = 1;
     if(fabs(dx)>fabs(dy))
     {
+        wy = width;
          steps = fabs(dx);
     }
     else
     {
+        wx = width;
          steps = fabs(dy);
     }
+ //   printf("x0:%d ,y0:%d x1:%d y1:%d ,steps:%d\n",x0,y0,xEnd,yEnd,steps);
 
     xInc = (float)(dx)/(float)(steps);
     yInc = (float)(dy)/(float)(steps);
@@ -189,15 +193,18 @@ void dda(SDL_Surface *surface,int x0, int y0, int xEnd, int yEnd,Uint32 color)
     {
          x += xInc;
          y += yInc;
-         Putpixel(surface,rounding(x),rounding(y),color);
+         for(int i = 0; i<wx;i++)
+         {
+            for(int j = 0; j < wy ;j ++)
+            {
+                Putpixel(surface,rounding(x+i-wx/2),rounding(y+j-wy/2),color);
+            }
+         }
     }
 }
-/*
-param width is invalid
-*/
 
 void line(SDL_Surface *surface,int x,int y ,int x2,int y2,Uint32 color,int width) {
-    dda(surface,x,y,x2,y2,color);
+    dda(surface,x,y,x2,y2,color,width);
 }
 
 void Bar(SDL_Surface *surface, SDL_Rect Bar_Rect, Uint32 color)
@@ -503,7 +510,7 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
             line(surface,tRect.x+tRect.w/2,tRect.y+tRect.h/2,rect.x+rect.w/2,rect.y+rect.h/2,0x005500,10);
         }
         tRect = rect;
-
+      //  line(surface,1,1,160,100,0xff0000,10);
         tmp1 = tmp1->next;
         if(nodecolor < 0x00f000) nodecolor +=0x000f00;
     }
