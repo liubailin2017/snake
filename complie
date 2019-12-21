@@ -1,0 +1,1 @@
+gcc *.c  -ID:/lib/SDL2-2.0.10/i686-w64-mingw32/include/SDL2 -ID:/lib/SDL2_ttf-2.0.15/i686-w64-mingw32/include -ID:/lib/SDL2-2.0.10/i686-w64-mingw32/include -LD:/lib/SDL2-2.0.10/i686-w64-mingw32/lib -LD:/lib/SDL2_ttf-2.0.15/i686-w64-mingw32/lib -lSDL2 -lSDL_main -lSDL2_ttf

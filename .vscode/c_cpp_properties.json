@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:\\lib\\SDL2-2.0.10\\i686-w64-mingw32\\include",
+                "D:\\lib\\SDL2-2.0.10\\i686-w64-mingw32\\include\\SDL2",
+                "D:/lib/SDL2_ttf-2.0.15/i686-w64-mingw32/include",
+                "D:/lib/SDL2_ttf-2.0.15/i686-w64-mingw32/include/SDL2"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\MinGW\\bin\\gcc.exe",
+            "intelliSenseMode": "clang-x64",
+            "configurationProvider": "vector-of-bool.cmake-tools"
+        }
+    ],
+    "version": 4
+}

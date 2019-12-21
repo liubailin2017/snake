@@ -7,7 +7,11 @@ int DSave(){
     char *home;
     home = getenv("HOME");
     char path[256] ={'\0'};
-    strcat(path,home);
+    if(home)
+        strcat(path,home);
+    else {
+        strcat(path,".");
+    }
     strcat(path,"/hscore.sav");
 
     char s[] = "this is saving about you high score";
@@ -23,10 +27,19 @@ int DRead(){
     char *home;
     home = getenv("HOME");
     char path[256] ={'\0'};
-    strcat(path,home);
+    if(home)
+        strcat(path,home);
+    else {
+        strcat(path,".");
+    }
     strcat(path,"/hscore.sav");
     FILE* fload = fopen(path,"r");
-    if(fload == NULL) exit(1);
-    fread(hscore,sizeof(int),10,fload);
+    if(fload == NULL) {
+        fload = fopen(path,"w+");
+        memset(hscore,0,sizeof(int)*10);
+    }else {
+        fread(hscore,sizeof(int),10,fload);
+    }
+
     fclose (fload);
 }

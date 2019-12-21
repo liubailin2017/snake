@@ -1,26 +1,24 @@
-/*è¯Žæäœ¿çšçæäœç³»ç»*/
-
-#include"title.h"
-
-#define Linux
+#define Windows
 #include<stdio.h>
 #include<stdlib.h>
 #include"ver.h"
 #include"file.h"
-#include<SDL2/SDL.h>
 #include<SDL2/SDL_ttf.h>
+#include<SDL.h>
+
 #define Width 840
 #define Height 560
 #define DELAY 260
-//æžžæåšçªå£å·Šäžè§åæ 
+
 #define XX GameMR.x
 #define YY GameMR.y
-//æžžæåšçªå£å³äžè§åæ 
+
 #define XX2 (GameMR.x + GameMR.w)
 #define YY2 (GameMR.y + GameMR.h)
-//äžèçå€§å°
-#define XX3 (GameMR.w)/limitx
-#define YY3 (GameMR.h)/limity
+
+#define XX3 ((GameMR.w)/limitx)
+#define YY3 ((GameMR.h)/limity)
+
 #define PASS 0x5201314F
 #define SDSize 30
 #ifdef Windows
@@ -29,11 +27,11 @@
 typedef struct snake
 {
     int x ;
-    int y ; /*x ,y äžæ¯åçŽ  èæ¯èçäœçœ®*/
+    int y ;
     struct snake *next ;
 } Snake;
 
-typedef struct _DirMsg /*èŸå¥éå*/
+typedef struct _DirMsg 
 {
     SDL_Keycode msg[SDSize];
     int Rear;
@@ -81,6 +79,7 @@ void sdown();
 void sup();
 void Inserths(int sc);
 void puths(SDL_Surface *surface);
+
 int main(int argc, char *argv[])
 {
     Version();
@@ -88,7 +87,7 @@ int main(int argc, char *argv[])
     SDL_Init(SDL_INIT_EVERYTHING);
     TTF_Init();
     DRead();
-    SDL_Window* window = SDL_CreateWindow(" My qq:2570667204"
+    SDL_Window* window = SDL_CreateWindow("贪食蛇"
                                           ,SDL_WINDOWPOS_UNDEFINED
                                           ,SDL_WINDOWPOS_UNDEFINED
                                           ,Width,Height
@@ -97,15 +96,13 @@ int main(int argc, char *argv[])
 
 
     SDL_Surface* screen = SDL_GetWindowSurface(window);
-//éå€æžžæ ã
+
      while(!isquit)
     {
         isgameover = 0;
         Initsnake();
-//        init(window);
-//    	startChangeTitle();//开始自动更新标题
         Gamerun(screen,window);
-  //      stopChangeTitle();
+        Gameover(window);
     }
 
 
@@ -115,11 +112,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-/************ç»ç¹*****************
- *ç»äžäžªsufaceç»äžäžªç¹
- *Px ,Py åæ 
- *coloré¢è²
- *********************************/
+
 int Putpixel(SDL_Surface *surface, int Px, int Py,Uint32 color)
 {
     switch(surface->format->BytesPerPixel)
@@ -139,7 +132,7 @@ int Putpixel(SDL_Surface *surface, int Px, int Py,Uint32 color)
             {
                 SDL_UnlockSurface(surface);
             }
-            return 1 ;    /*  ********** !è¿å ************/
+            return 1 ; 
         }
         else
             return 0 ;
@@ -157,9 +150,7 @@ int swapInt(int *t1, int *t2){
     *t2 = t;
 }
 
-/**
-w æ¯äžªäžåå¥œåŒå»ºè®®äŒ å¥1
-**/
+
 #include "stdlib.h"
 
 #include "math.h"
@@ -169,7 +160,6 @@ w æ¯äžªäžåå¥œåŒå»ºè®®äŒ å¥1
 int rounding(const float a){return (int) (a + 0.5);}
 
 void dda(SDL_Surface *surface,int x0, int y0, int xEnd, int yEnd,Uint32 color,int width)
-
 {
     int dx = xEnd - x0, dy = yEnd - y0, steps, k;
     float xInc, yInc, x = (float)x0, y = (float)y0;
@@ -184,7 +174,6 @@ void dda(SDL_Surface *surface,int x0, int y0, int xEnd, int yEnd,Uint32 color,in
         wx = width;
          steps = fabs(dy);
     }
- //   printf("x0:%d ,y0:%d x1:%d y1:%d ,steps:%d\n",x0,y0,xEnd,yEnd,steps);
 
     xInc = (float)(dx)/(float)(steps);
     yInc = (float)(dy)/(float)(steps);
@@ -217,13 +206,7 @@ void Bar(SDL_Surface *surface, SDL_Rect Bar_Rect, Uint32 color)
         }
 }
 
-/************åšSurfaceèŸåºææ¬************
- *  suface èŸåº
- *  x,yåæ 
- *  å€§å°
- *  fcoloré¢è²
- *  ææ¬
- *****************************************/
+
 int Puttext(SDL_Surface *surface,
             int x, int y,
             int ptsize,
@@ -232,9 +215,15 @@ int Puttext(SDL_Surface *surface,
 {
     SDL_Surface* msg;
     SDL_Rect tpos = {x,y};
-
+#ifdef Windows
+    TTF_Font* font = TTF_OpenFont("SDL_font.ttf", ptsize);
+#else
     TTF_Font* font = TTF_OpenFont("/usr/share/fonts/SDL_font.ttf", ptsize);
-    if(font == NULL) printf("ttf Error!");
+#endif
+    if(font == NULL) {
+        printf("ttf Error!");
+        return 0;
+    }
     msg = TTF_RenderUTF8_Solid(font, text, fcolor);
     SDL_BlitSurface(msg, NULL, surface, &tpos);
     TTF_CloseFont(font);
@@ -242,10 +231,7 @@ int Puttext(SDL_Surface *surface,
     return 1;
 }
 
-/**********æžžæççªå£æ¡æ¶*******
- *surface
- *åæ° /åœååæ°ïŒåœæ¶æ²¡è®Ÿè®¡å¥œãç®æ¯äžäžªæ²¡çšçäžè¥¿
- ********************************/
+
 void GameframeR(SDL_Surface* surface,int score)
 {
     char strscr[]="SCORE :XXXXXXXX Highest : XXXXXXXX";
@@ -293,13 +279,11 @@ void GameframeR(SDL_Surface* surface,int score)
     }
 }
 
-/***********æŽæ°é£ç©**********
-*
-***********************************/
+
 void Afood()
 {
     Snake* tmp = snakeh;
-    int isfoodself = 0; // é£ç©æ¯åŠåšèªå·±èº«äž
+    int isfoodself = 0; 
     do
     {
         isfoodself = 0;
@@ -319,67 +303,16 @@ void Afood()
     }
     while(isfoodself == 1);
 }
-/**********äžé¢äžäžªåœæ°å®ç°åªèœå­2äžªèŸå¥çéå**************/
-int IsDrEmpty(DirMsg *sdir)
-{
-    if(sdir->Front == sdir->Rear)
-        return 1;
-    else
-        return 0;
-}
-SDL_Keycode PollDirect(DirMsg *sdir)
-{
-    SDL_Keycode tmp = 0;
-    if(!IsDrEmpty(sdir))
-    {
-        tmp = sdir->msg[sdir->Front];
-        sdir->Front ++;
-        sdir->Front = sdir->Front % SDSize;
-    }
-return tmp;
-}
-
-/**
-    åªçéå€Ž
-
-sdir åŸå€ççæ¶æ¯éå
-
-è¿åïŒ
-    éå€Žæ¶æ¯ïŒ åŠæéåäžºç©ºåè¿å0
-*/
-SDL_Keycode peekDirect(DirMsg *sdir) {
-    SDL_Keycode result = 0;
-    if(!IsDrEmpty(sdir)) {
-        result = sdir ->msg[sdir->Front];
-    }
-    return result;
-}
-
-int PushNextDirect(DirMsg *sdir ,SDL_Keycode message)
-{
-    if(sdir->Front != (sdir->Rear + 1)% SDSize)
-    {
-        sdir->msg[sdir->Rear] = message;
-        sdir->Rear++;
-        sdir->Rear = sdir->Rear % SDSize;
-        return 1;
-    }
-    else
-        return 0;
-}
-/********æžžæè¿è¡æ¶*************
- *surface , window
- *æžžæè¿è¡æ¶ïŒåå«äºä»¶å€ç
- *******************************/
-
 
 void Gamerun(SDL_Surface* surface,SDL_Window * window)
 {
+    int tick = SDL_GetTicks();
     int pause = 1;
     SDL_Event event;
     SDirect sdir = RIGHT;
     SDL_Keycode code;
-    while ((!isquit) && (!isgameover))
+    int  gogo ; /* :-) */
+    while (!isquit && isgameover != 2)
     {
        while(SDL_PollEvent(&event))
         {
@@ -389,20 +322,13 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
              #ifdef Windows
                 SendMessage(GetActiveWindow(),WM_NCLBUTTONDOWN, HTCAPTION, 0);
             #endif
-
                 break;
-
             case SDL_QUIT:
-                isquit = 1; //éåº
+                isquit = 1; 
                 break;
             case SDL_KEYDOWN:
-                 code=event.key.keysym.sym;
-                if(code != peekDirect(pDirTmp))
-                    PushNextDirect(&DirTmp,event.key.keysym.sym);
                 pause = 0;
-            }
-        }
-                switch(PollDirect(&DirTmp))
+                switch(event.key.keysym.sym)
                 {
                 case SDLK_DOWN :
                     if (sdir != UP )
@@ -431,12 +357,23 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
                 case SDLK_SPACE :
                     pause = 1;
                 }
+                if(pause) {
+                    
+                }else if(isgameover) {
+                    isgameover = 2;
+                }else {
+                    tick = SDL_GetTicks();
+                    Smove(sdir);                    
+                }
+            }
+        }
 
-
-        if(!pause)
+        if(!pause && !isgameover)
         {
-            Smove(sdir);
-            SDL_SetWindowTitle(window,"Running...    My qq:2570667204");
+            if(SDL_GetTicks() - tick > DELAY) {
+                tick = SDL_GetTicks();
+                Smove(sdir);
+            }
         }
 
 
@@ -445,21 +382,17 @@ void Gamerun(SDL_Surface* surface,SDL_Window * window)
             limitx = limitx + 5;
             limity = limity + 5;
             printf("limitx,y= %d,%d /n",limitx,limity);
-        } // èº«äœå¡«æ»¡äºæŽäžªçªå£ïŒçŒ©å°èº«äœ
-
-        if(isfender() || isself()) // æžžæç»æ
+        }
+        if(isfender() || isself())
         {
-            isgameover = 1;
-            Gameover(window);
-
+            if(isgameover== 0) isgameover = 1;
         }
         draw(surface,window,pause);
-        SDL_Delay(DELAY);
+        SDL_Delay(20);
     }
-
 }
 
-void Initsnake()        //åå§åè
+void Initsnake()
 {
     limitx = 12;
     limity = 9;
@@ -467,7 +400,6 @@ void Initsnake()        //åå§åè
     snakeh = (Snake *)malloc(sizeof(Snake));
     snakeh->x = 2;
     snakeh->y = 0;
-//æ·»å äž€è
     Snake* tmp = (Snake *)malloc(sizeof(Snake));
     tmp->x = 1;
     tmp->y = 0;
@@ -482,12 +414,13 @@ void Initsnake()        //åå§åè
 
 void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
 {
+    int sum_node = 0;
+    int cnt = 0;
     int nodecolor = 0;
     GameframeR(surface,Sscore);
     Snake* tmp1;
     SDL_Rect rect;
     tmp1 = snakeh;
-//ç»é£ç©
     {
         rect.x = ((food.x) * XX3)+GameMR.x;
         rect.y = ((food.y) * YY3)+GameMR.y;
@@ -495,24 +428,29 @@ void draw(SDL_Surface* surface,SDL_Window * window,int ispause)
         rect.h = YY3;
         Bar(surface,rect,rand()*0xff & 0xff00ff);
     }
-    //ç»èèº«
     SDL_Rect tRect;
     tRect.x = -1;
     tRect.y = -1;
     while(tmp1 != NULL)
     {
-        rect.x = ((tmp1->x) * XX3+1)+GameMR.x;
-        rect.y = ((tmp1->y) * YY3+1)+GameMR.y;
-        rect.w = XX3-1;
-        rect.h = YY3-1;
-        Bar(surface,rect,nodecolor);
-        if(tRect.x != -1 && tRect.y != -1) {
-            line(surface,tRect.x+tRect.w/2,tRect.y+tRect.h/2,rect.x+rect.w/2,rect.y+rect.h/2,0x005500,10);
-        }
-        tRect = rect;
-      //  line(surface,1,1,160,100,0xff0000,10);
+        sum_node ++;
         tmp1 = tmp1->next;
-        if(nodecolor < 0x00f000) nodecolor +=0x000f00;
+    }
+    tmp1 = snakeh;
+    while(tmp1 != NULL)
+    {
+        cnt ++;
+        rect.x = ((tmp1->x) * XX3)+GameMR.x;
+        rect.y = ((tmp1->y) * YY3)+GameMR.y;
+        rect.w = XX3;
+        rect.h = YY3;
+        Bar(surface,rect,nodecolor);
+        // if(tRect.x != -1 && tRect.y != -1) {
+        //     line(surface,tRect.x+tRect.w/2,tRect.y+tRect.h/2,rect.x+rect.w/2,rect.y+rect.h/2,0x005500,10);
+        // }
+        tRect = rect;
+        tmp1 = tmp1->next;
+        nodecolor = 0x00ff00 & (0x00f000/sum_node*cnt);
     }
     if(ispause) puths(surface);
     SDL_UpdateWindowSurface(window);
@@ -583,7 +521,6 @@ void Gameover(SDL_Window *window)
     Snake* tmp ;
     food.x = 5 ;
     food.y = 0 ;
-//æžé€éŸè¡š
     while(snakeh != NULL )
     {
         if(snakeh != NULL) tmp = snakeh ;
@@ -591,7 +528,7 @@ void Gameover(SDL_Window *window)
         free(tmp);
     }
 
-    Inserths(Sscore);//æå¥åæ°
+    Inserths(Sscore);
     DSave();
     Sscore = 0 ;
 }
@@ -603,6 +540,7 @@ int isfender()
             return 0;
     return 1 ;
 }
+
 int isself()
 {
     int is = 0;
@@ -614,6 +552,7 @@ int isself()
     }
     return is ;
 }
+
 void puths(SDL_Surface *surface)
 {
     int line;
@@ -627,7 +566,7 @@ void puths(SDL_Surface *surface)
     }
 
 }
-void Inserths(int sc) //æå¥æé«å
+void Inserths(int sc)
 {
     int i ;
     for(i = 9 ; hscore[i] < sc && i>=0 ; i--)
